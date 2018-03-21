@@ -1,12 +1,10 @@
 # 安装 Raspbian 操作系统
 
-Ref:  
-[https://www.raspberrypi.org/documentation/installation/installing-images/README.md](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+Ref:[ https://www.raspberrypi.org/documentation/installation/installing-images/README.md](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 
 ## 获取 Raspbian 映像
 
-@[This page](https://www.raspberrypi.org/downloads/raspbian/).  
-使用 RASPBIAN STRETCH LITE 映像即可。
+Download @[This page](https://www.raspberrypi.org/downloads/raspbian/). 使用 RASPBIAN STRETCH LITE 映像即可。
 
 该系统不包含任何 GUI 组件支持（本课程实验也不需要），下载和烧写较快。  
 如果后期需要 GUI 组件，可以在该系统上另行安装。

@@ -1,4 +1,4 @@
-# RPi基本操作
+# RPi 基本操作
 
 ## 连接至 RPi 控制台
 
@@ -44,5 +44,7 @@ rtt min/avg/max/mdev = 0.783/0.968/1.133/0.155 ms
 
 登陆之后会出现一些提示信息，打开一个命令控制台。
 
-![](/assets/RPi_logged_in.png)
+## ![](/assets/RPi_logged_in.png)
+
+
 
