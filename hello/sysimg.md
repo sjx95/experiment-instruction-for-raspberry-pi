@@ -30,7 +30,7 @@ _对于 Linux 用户：_
   * FAT32 分区，Windows/Linux 下均可读写；
 * rootfs \(Root File System\):
   * 该分区占满记忆卡剩余空间；
-  * EXT4 分区，Linux 下可读；
+  * EXT4 分区，Linux 下可读写；
 
 ## 进行基本配置
 
@@ -45,7 +45,7 @@ Ref:
 
 1. 挂载 boot 分区；
 2. 在 boot 分区下新建一个空的文本文档，并将其命名为 ssh；
-3. 在 boot 分区下找到`cmdline.txt`，在文件开头写下`ip=192.168.23.3`（注意最后有个空格）；  
+3. 在 boot 分区下找到`cmdline.txt`，在文件开头写下`ip=192.168.226.3`（注意最后有个空格）；  
    该文件应该看起来像这样：  
    `ip=192.168.226.3 dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=d3aa9210-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
 
