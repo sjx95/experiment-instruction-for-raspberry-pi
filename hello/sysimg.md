@@ -1,6 +1,6 @@
 # 安装 Raspbian 操作系统
 
-Ref:   
+Ref:  
 [https://www.raspberrypi.org/documentation/installation/installing-images/README.md](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 
 ## 获取 Raspbian 映像
@@ -39,7 +39,7 @@ _对于 Linux 用户：_
 Raspbian 映像默认配置下，需要外接显示器和 HDMI 才能登陆树莓派控制台，这显然很不方便，也不符合课程需要。  
 因此需要在这里预先修改一部分系统配置。
 
-Ref:   
+Ref:  
 [A SECURITY UPDATE FOR RASPBIAN PIXEL](https://www.raspberrypi.org/blog/a-security-update-for-raspbian-pixel/)  
 [THE LATEST UPDATE TO RASPBIAN](https://www.raspberrypi.org/blog/another-update-raspbian/)
 
@@ -47,13 +47,13 @@ Ref:
 
 1. 挂载 boot 分区；
 2. 在 boot 分区下新建一个空的文本文档，并将其命名为 ssh；
-3. 在 boot 分区下找到`cmdline.txt`，在文件开头写下`ip=192.168.23.3 `（注意最后有个空格）；
+3. 在 boot 分区下找到`cmdline.txt`，在文件开头写下`ip=192.168.23.3`（注意最后有个空格）；  
    该文件应该看起来像这样：  
    `ip=192.168.226.3 dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=PARTUUID=d3aa9210-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
 
 4. 弹出 TF 卡。
 
-
+\*备注：寝室申请过固定 IP 的同学，也可以将 IP 修改为 10.X.Y.Z，其中 X、Y 与申请到的 IP 一致，Z 不同。\*
 
 
 
