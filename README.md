@@ -1,3 +1,3 @@
-# My Awesome Book
+# Experiment Instruction for Raspberry Pi
 
-This file file serves as your book's preface, a great place to describe your book's content and ideas.
+The instruction of experiment in master course "Embedded System Design".
