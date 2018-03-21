@@ -24,7 +24,7 @@ Ref:
 `dd if=<IMAGE_PATH> of=/dev/sdX bs=4M; sync`
 
 系统映像写入完成后，应当能够看到 TF 卡被分为两个分区：
-1. boot:
+- boot:
 	- 分区大小约50MB；
 	- FAT32 分区，Windows/Linux 下均可读写；
 - rootfs (Root File System):
@@ -44,6 +44,8 @@ Ref:
 1. 挂载 boot 分区；
 2. 在 boot 分区下新建一个空的文本文档，并将其命名为 ssh；
 3. 在 boot 分区下新建一个空的文本文档，写入以下内容，并将其重命名为`wpa_supplicant.conf`：
+4. 弹出 TF 卡。
+
 ```
 country=CN
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -55,4 +57,4 @@ psk="12345678"
 key_mgmt=WPA-PSK
 }
 ```
-4. 弹出 TF 卡。
+
