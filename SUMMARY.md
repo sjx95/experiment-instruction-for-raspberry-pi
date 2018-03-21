@@ -6,4 +6,5 @@
   * [安装 Raspbian 操作系统](hello/sysimg.md)
   * [RPi 基本操作](hello/raspbian-ji-ben-cao-zuo.md)
   * [Hello RPi](hello/hello-rpi.md)
+  * [实验总结](hello/shi-yan-zong-jie.md)
 
