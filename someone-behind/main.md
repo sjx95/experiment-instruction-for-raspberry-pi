@@ -14,6 +14,7 @@
 - 面包板
 - LED
 - 杜邦线
+- USB 摄像头
 
 ## 实验流程
 
@@ -84,16 +85,20 @@ Nginx 则是一个 HTTP 服务器，在这里用于在主机的浏览器中显�
 ### 借助 OpenCV 读取摄像头
 
 在准备好环境后，我们先来编写一个简单的小程序来测试整个环境能否正常工作。
-在这个程序中，我们：
+在这个程序中，我们将：
 
-- 打开了摄像头
+- 打开摄像头
 - 从摄像头读取画面
-- 将画面写入 HTTP 文件夹下
+- 将画面写入 HTTP 目录下（Nginx 默认目录 `/var/www/html/`）
 - 在主机上用浏览器读取图片
 
+参考：  
+[OpenCV documentation Index](https://docs.opencv.org/2.4.9/)  (2.4.X版本的文档基本通用)  
+[Reading and Writing Images and Video](https://docs.opencv.org/2.4.9/modules/highgui/doc/reading_and_writing_images_and_video.html)
 
 
 ```c++
+// cap.cpp
 #include <iostream>
 #include <fstream>
 #include <opencv2/core/core.hpp>
@@ -119,11 +124,30 @@ int main() {
 }
 ```
 
+下面对源代码进行编译。
+与上一个实验不同，由于我们调用了OpenCV，因此需要链接OpenCV的链接库。
+在 GCC 中，参数 -l 用于指定链接库，如 -lm 指的 libm.so（即去掉链接库文件名的lib和后缀名）。
+这里我们使用了 opencv\_core 和 opencv\_hightui 组件，因此需要使用 `-lopencv_core -l opencv_highgui` 进行正确链接。
+
+参考：  
+[C 语言编译过程详解](https://www.cnblogs.com/CarpenterLee/p/5994681.html)  
+[GCC 编译命令](https://www.cnblogs.com/ibyte/p/5828445.html)  
+[gcc的使用简介与命令行参数说明](http://www.cnblogs.com/testlife007/p/6555404.html)  
+[GCC and Make: Compiling, Linking and Building C/C++ Applications](https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html)  
+
+因此编译命令为：
+
 ```bash
-g++ cap.cpp -lopencv_core -lopencv_highgui
+g++ cap.cpp -lopencv_core -lopencv_highgui -o cap
 ```
+
+如果没有意外的话，我们可以在浏览器中打开 `http://192.168.226.3/cap.png ` 并看到画面了，这时周期性的按下刷新按钮并移动摄像头，可以看到图片会有一定的变化。
 
 ### 识别画面中的人脸
 
 ## 实验总结
 
+## 思考体
+
+1. g++ 和 gcc 有什么区别？如何查看 g++ 的版本？
+2. 为什么有时候浏览器刷新后，看到的图片不完整？
