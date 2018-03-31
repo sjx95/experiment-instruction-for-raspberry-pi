@@ -2,7 +2,7 @@
 
 作者： 宋建勋
 
-Q&A： sjx95@outlook.com
+Q&A / 反馈： sjx95@outlook.com
 
 
 
@@ -16,5 +16,5 @@ The instruction of experiment in master course "Embedded System Design".
 
 Author: SONG JianXun
 
-Q&A: sjx95@outlook.com
+Q&A / Feedback: sjx95@outlook.com
 
