@@ -29,15 +29,15 @@ ASIO 的[官方页面](http://think-async.com/)提供了下载、文档和相应
 首先，我们先在树莓派上安装 ASIO 库，与 OpenCV 库一样， Raspbian 官方已经为我们预先打包了 ASIO 库，包名称为 `libasio-dev` ，因此使用命令 `sudo apt install libasio-dev` 即可让 APT 包管理程序为我们装好。
 
 然后在本地安装 ASIO 库，如果正在使用 Linux 操作系统，那么一般可以使用包管理工具自动安装，包名一般为 `libasio-dev` `libasio-devel` 之类。
-如果你正在使用 Windows 系统，那么
-# TODO ASIO in Windows
+如果你正在使用 Windows 系统，只需要将下载下来的asio-xxx.zip文件中的include文件夹解压到一个你能找到的地方即可，在编写Server端程序时需要使用这里的头文件。
 
 ### 安装 OpenCV
 
 之前我们在树莓派上安装了 OpenCV 库，这次我们还需要在本地安装 OpenCV 库。
 Linux 下安装比较简单，只需要安装相应的包就好了，一般会叫 `opencv-devel` `libopencv-dev` 或别的什么名字。
-Windows 下的安装则
-# TODO OpenCV in Windows
+Windows下推荐在Visual Studio下使用OpenCV库，安装可参考以下文章：
+[How to build applications with OpenCV inside the "Microsoft Visual Studio"](https://docs.opencv.org/3.4.1/dd/d6e/tutorial_windows_visual_studio_opencv.html)
+[OpenCV学习笔记（一）——OpenCV3.1.0+VS2015开发环境配置](https://www.cnblogs.com/linshuhe/p/5764394.html)
 
 ### 编写第一个网络通信程序
 
@@ -199,7 +199,52 @@ int main(int argc, char *argv[]) {
 
 下面来编写 Server 端，这里主要讲 Windows 的 Server 端， Linux 使用与 Windows 相同的代码即可，编译方式与树莓派类相似。
 
-# TODO Windows OpenCV Server
+首先在Visual Studio工程中添加ASIO头文件的路径，具体方式为：Properties->VC++ Directories->Include Directories。然后添加Server端文件：
+```c++
+#define	ASIO_STANDALONE
+#include <iostream>
+#include <string>
+#include <asio.hpp>
+#include <opencv2/opencv.hpp>
+
+using namespace std;
+using namespace cv;
+using asio::ip::tcp;
+
+int main() {
+	asio::io_service io_service;
+	tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 8783));
+
+	namedWindow("Camera");
+
+	tcp::socket socket(io_service);
+	acceptor.accept(socket);
+
+	do {
+		vector<uint8_t> buffer(4);
+		socket.receive(asio::buffer(buffer));
+
+		size_t length = *((uint32_t *)&buffer[0]);
+		cout << "length = " << length << ", " << flush;
+
+		vector<uint8_t> img_data;
+		buffer.resize(length);
+		while (img_data.size() != length) {
+			int recv_len = socket.receive(asio::buffer(buffer, length - img_data.size()));
+			img_data.insert(img_data.end(), buffer.begin(), buffer.begin() + recv_len);
+		}
+		cout << "img_data.size() = " << img_data.size() << "." << endl;
+
+		Mat img = imdecode(img_data, IMREAD_COLOR);
+		imshow("Camera", img);
+	} while (waitKey(1) != 'q');
+
+	socket.close();
+
+	return 0;
+}
+
+```
 
 最后对这两个程序进行测试，首先在本地启动 Server 端程序，然后在树莓派上启动远程端，即 `./ipcamera 192.168.226.2 8783` ，如果一切顺利的话，应该在本地看到有如下显示：
 
