@@ -29,14 +29,17 @@ ASIO 的[官方页面](http://think-async.com/)提供了下载、文档和相应
 首先，我们先在树莓派上安装 ASIO 库，与 OpenCV 库一样， Raspbian 官方已经为我们预先打包了 ASIO 库，包名称为 `libasio-dev` ，因此使用命令 `sudo apt install libasio-dev` 即可让 APT 包管理程序为我们装好。
 
 然后在本地安装 ASIO 库，如果正在使用 Linux 操作系统，那么一般可以使用包管理工具自动安装，包名一般为 `libasio-dev` `libasio-devel` 之类。
-如果你正在使用 Windows 系统，只需要将下载下来的asio-xxx.zip文件中的include文件夹解压到一个你能找到的地方即可，在编写Server端程序时需要使用这里的头文件。
+
+如果你正在使用 Windows 系统，需要在官方页面下载 Non-Boost 版本的库，并将其中的 include 文件夹解压至项目目录。
+在编写 Server 端程序时，我们将使用这些的头文件。
 
 ### 安装 OpenCV
 
 之前我们在树莓派上安装了 OpenCV 库，这次我们还需要在本地安装 OpenCV 库。
 Linux 下安装比较简单，只需要安装相应的包就好了，一般会叫 `opencv-devel` `libopencv-dev` 或别的什么名字。
-Windows下推荐在Visual Studio下使用OpenCV库，安装可参考以下文章：
-[How to build applications with OpenCV inside the "Microsoft Visual Studio"](https://docs.opencv.org/3.4.1/dd/d6e/tutorial_windows_visual_studio_opencv.html)
+
+Windows 下推荐在 Visual Studio 下使用 OpenCV 库，安装可参考以下文章：  
+[How to build applications with OpenCV inside the "Microsoft Visual Studio"](https://docs.opencv.org/3.4.1/dd/d6e/tutorial_windows_visual_studio_opencv.html)  
 [OpenCV学习笔记（一）——OpenCV3.1.0+VS2015开发环境配置](https://www.cnblogs.com/linshuhe/p/5764394.html)
 
 ### 编写第一个网络通信程序
@@ -139,6 +142,12 @@ test: test.cpp
 
 现在，是时候正式编写我们的 IP Camera 了。
 为了简化编程，这里使用了阻塞同步的方式，并忽略了大部分的错误处理。
+
+由于 TCP 传输的是无结构的字节流，因此需要我们规定一种数据传输的结构，好区分每一帧的图像。
+一种最简单的方法是，每次建立链接，发送一帧图像，然后断开连接。
+显然这种方法效率非常低，因此我们规定，在每一帧传输前，首先通知每一帧的长度，
+这样我们就可以通过计算已接收的长度，得知一幅图像何时传输结束了。
+
 源文件如下：
 
 ```c++
@@ -195,11 +204,14 @@ int main(int argc, char *argv[]) {
 ```
 
 现在，执行命令 `make` 即可，因为 ip-camera 写在第一个目标的位置，因此会被当作默认目标。
-再次说明，这里忽略了大部分的错误处理，这在实际工程中可能造成程序崩溃。
+再次强调，这里忽略了大部分的错误处理，这在实际工程中可能造成程序崩溃。
 
 下面来编写 Server 端，这里主要讲 Windows 的 Server 端， Linux 使用与 Windows 相同的代码即可，编译方式与树莓派类相似。
 
-首先在Visual Studio工程中添加ASIO头文件的路径，具体方式为：Properties->VC++ Directories->Include Directories。然后添加Server端文件：
+首先在Visual Studio工程中添加ASIO头文件的路径，具体方式为：  
+Properties -> VC++ Directories -> Include Directories。
+然后添加Server端文件：
+
 ```c++
 #define	ASIO_STANDALONE
 #include <iostream>
@@ -248,5 +260,21 @@ int main() {
 
 最后对这两个程序进行测试，首先在本地启动 Server 端程序，然后在树莓派上启动远程端，即 `./ipcamera 192.168.226.2 8783` ，如果一切顺利的话，应该在本地看到有如下显示：
 
-# TODO Add that screenshot
+![](/assets/cap_ipcamera.png)
 
+## 总结
+
+在本次实验中，我们：
+
+- 安装了 ASIO 网络库
+- 了解了 TCP/IP 的工作原理
+- 进行了 TCP/IP 通信实验
+
+相比于 STM32/51 等平台需要通过大量的寄存器操作，RPi 在处理网络 IO 时只需要跟 Socket 这一统一的结构体交互，在编码时非常方便。
+同时，这也是嵌入式 Linux 的一大优势之一。
+
+## 思考题
+1. 结合 TCP 连接建立和断开的过程，分析一下为何每张图像建立一次连接很低效。
+2. 为什么要用 TCP 而不是 UDP ，好处有什么？何时需要使用 UDP ？
+3. 如果传输过程中发生丢包，造成不可恢复的 TCP 错误，会引起图像数据长度计算错误，进一步导致图像解码失败。
+试问应当如何判断这一类错误，并从错误中恢复？
