@@ -88,16 +88,19 @@ using namespace std;
 using asio::ip::tcp;
 
 int main(int argc, char *argv[]) {
+        // Init IO_Service
         asio::io_service ios;
+        // Resolve target address and port
         tcp::resolver resolver(ios);
         tcp::resolver::query query(argv[1], argv[2]);
         tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-
+        // Create and connect Socket
         tcp::socket socket(ios);
         asio::connect(socket, endpoint_iterator);
+        // Send data
         socket.send(asio::buffer(string(argv[3])));
+        // Close socket
         socket.close();
-
         return 0;
 }
 
@@ -121,12 +124,16 @@ Makefile 可以实现非常丰富的功能，从像本实验一样简单的项�
 现在，新建一个工程文件夹，将 test.cpp 移动进去，然后在工程文件夹下新建 Makefile 文件，并写入以下内容：
 
 ```Makefile
+# Setting OpenCV dependent library
 OPENCV_LIBS = $(shell pkg-config --libs opencv)
+# Setting ASIO dependent library
 ASIO_LIBS = -lpthread
 
+# Default target ip-camera
 ip-camera: ip-camera.cpp
         ${CXX} -o ip-camera ip-camera.cpp ${OPENCV_LIBS} ${ASIO_LIBS}
 
+# Add-on target test
 test: test.cpp
         ${CXX} -o test test.cpp ${ASIO_LIBS}
 
@@ -163,31 +170,37 @@ using namespace std;
 using asio::ip::tcp;
 
 int main(int argc, char *argv[]) {
+    // Open camera
     VideoCapture vin(0);
     if (!vin.isOpened()) {
         cerr << "Failed opening camera." << endl;
         return -1;
     }
-
+    
+    // Init IO_Service
     asio::io_service ios;
+    // Resolve target address and port
     tcp::resolver resolver(ios);
     tcp::resolver::query query(argv[1], argv[2]);
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-
+    // Create and connect Socket
     tcp::socket socket(ios);
     asio::connect(socket, endpoint_iterator);
+    
     do {
+        // Reading and encoding images
         Mat img;
         vin >> img;
         vector<uint8_t> T_imgBuffer;
         imencode(".png", img, T_imgBuffer);
         cerr << "T_imgBuffer.size() = " << T_imgBuffer.size() << endl;
-
+        // Calculate data size
         vector<uint8_t> size;
         size.push_back(T_imgBuffer.size());
         size.push_back(T_imgBuffer.size() >> 8);
         size.push_back(T_imgBuffer.size() >> 16);
         size.push_back(T_imgBuffer.size() >> 24);
+        // Send size and data
         try {
                 socket.send(asio::buffer(size));
                 socket.send(asio::buffer(T_imgBuffer));
@@ -196,7 +209,7 @@ int main(int argc, char *argv[]) {
         }
         waitKey(100);
     } while (true);
-
+    // Close socket
     socket.close();
     return 0;
 }
@@ -275,6 +288,9 @@ int main() {
 
 ## 思考题
 1. 结合 TCP 连接建立和断开的过程，分析一下为何每张图像建立一次连接很低效。
+2. 将三种网络编程模型与 STM32 中串口通信的三种方式 (查询、中断、DMA) 做类比。
 2. 为什么要用 TCP 而不是 UDP ，好处有什么？何时需要使用 UDP ？
 3. 如果传输过程中发生丢包，造成不可恢复的 TCP 错误，会引起图像数据长度计算错误，进一步导致图像解码失败。
 试问应当如何判断这一类错误，并从错误中恢复？
+4. 参考 OpenCV 和 ASIO 的文档，以及本实验中的前几个程序，尝试为服务端程序加上注释。
+
